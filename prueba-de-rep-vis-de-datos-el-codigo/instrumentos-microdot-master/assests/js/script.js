@@ -4,8 +4,8 @@ const units = {
 };
 
 const config = {
-	minTemp: 0,
-	maxTemp: 40,
+	minTemp: -20,
+	maxTemp: 50,
 	unit: "Celcius"
 };
 
@@ -28,23 +28,24 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+
+
+
     // Change temperature
     const temperature = document.getElementById("temperature");
-
     function setTemperature() {
-
         // Pido los datos a la ruta /data/update
         fetch("/data/update")
         .then(response => response.json())
         .then(data => {
             // Guardo el valor de temperatura en la variable temp
-            temp = (data.cpu_temp).toFixed(1);
+            temp = data['temp']
             // Asigno el valor de temperatura al termometro
-            temperature.style.height = (((temp - config.minTemp) / (config.maxTemp - config.minTemp) * 100).toFixed(1) + "%").toFixed(1);
+            temperature.style.height = (temp - config.minTemp) / (config.maxTemp - config.minTemp) * 100 + "%";
             temperature.dataset.value = temp + units[config.unit];
         });
         
     }
-    // Se actualiza la temperatura cada 200 ms
-    setInterval(setTemperature, 200);
+    // Se actualiza la temperatura cada 1 segundo
+    setInterval(setTemperature, 1000);
 });

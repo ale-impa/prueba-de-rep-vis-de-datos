@@ -1,3 +1,6 @@
+from bmp280 import *
+import time
+
 def connect_to(ssid: str, passwd: str):
     import network
     ssid = 'Red Profesores'
@@ -22,7 +25,7 @@ from microdot import Microdot, send_file
 app = Microdot()
 
 @app.route("/")
-def index(request)
+def index(request):
     return send_file("index.html")
 
 
@@ -33,9 +36,12 @@ def assets(request,dir, file):
 @app.route("/data/update")
 def data_update(request):
     # Importo ADC
-    from machine import ADC, Pin
-    # Creo una instancia asociada al sensor de temperatura interno
-    sensor_temp = ADC(Pin(33))
+    from machine import Pin,I2C
+    bus = I2C(0,scl=Pin(1),sda=Pin(0),freq=200000)
+    bmp = BMP280(bus)
+
+    bmp.use_case(BMP280_CASE_INDOOR)
+    sensor_temp = bmp.temperature
     # Leo dato del sensor y ajusto
     lectura = sensor_temp.read_u16() * 3.3 / (1 << 16)
     # Ajusto para leer la temperatura
